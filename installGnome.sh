@@ -12,11 +12,7 @@ function printInColor {
 	echo -e "${$1} $2"
 }
 
-
-if [[ $(id -u) -ne 0 ]]; then
-	printInColor "RED" "Please run this script as sudo."
-	exit
-else
+function installGnome {
 	sudo apt-get dist-upgrade
 
 	sudo add-apt-repository ppa:gnome3-team/gnome3-staging
@@ -26,16 +22,43 @@ else
 	
 	sudo apt install gnome gnome-shell ubuntu-gnome-desktop ubuntu-session gdm3
 	sudo apt autoremove
-
+	
 	wait
+}
+
+function uninstallUnity {
+	sudo apt purge unity-session unity
+	sudo apt autoremove
+}
+
+function uninstallLightDM {
+	sudo apt-get purge lightdm
+		
+	sudo rm -rf /var/lib/lightdm-data
+	sudo rm -rf /etc/lightdm
+	
+	sudo apt autoremove
+}
+
+function rebootComputer {
+	sleep 3
+	sudo reboot
+}
+
+
+if [[ $(id -u) -ne 0 ]]; then
+	printInColor "RED" "Please run this script as sudo."
+	exit
+else
+	
+	installGnome
 	
 	printQuestion "Do you want to remove untiy completely?"
 	read removeUnity
 
 	if [ "$removeUnity" == "y" ]
 	then
-		sudo apt purge unity-session unity
-		sudo apt autoremove
+		
 	fi
 	
 	printQuestion "Do you want to remove 'lightdm'?"
@@ -43,12 +66,7 @@ else
 	
 	if [ "$removeLightDM" == "y" || "$removeLightDM" == "" ]
 	then
-		sudo apt-get purge lightdm
-		
-		sudo rm -rf /var/lib/lightdm-data
-		sudo rm -rf /etc/lightdm
-		
-		sudo apt autoremove
+		uninstallLightDM
 	fi
 
 	printQuestion "To apply these changes, you have to restart your computer. Should I do that for you?"
@@ -57,8 +75,7 @@ else
 	if [ "$rebootNow" == "y" ]
 	then
 		echo "Good luck with your new gnome system."
-		sleep 3
-		sudo reboot
+		rebootComputer
 	else
 		echo "Good luck with your new gnome system."
 	fi
