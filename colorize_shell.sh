@@ -1,4 +1,3 @@
-//Thanks to [this](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors) wikpedia article.
 #!/bin/bash
 //End of coloring
 NC="\033[0m"
